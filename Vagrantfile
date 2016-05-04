@@ -21,6 +21,8 @@ Vagrant.configure("2") do |config|
       apt-get install -y php5-xdebug
       cat /var/www/config/php.ini >> /etc/php5/apache2/php.ini
       service apache2 restart
+      sed -i 's/bind-address/#bind-address/g' /etc/mysql/my.cnf
+      service mysql restart
     SHELL
 
     # Descomentar la siguiente línea para activar la tarjeta de red con IP "pública"
