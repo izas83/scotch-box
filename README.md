@@ -16,8 +16,6 @@ Para poder acceder desde el equipo anfitrión al servidor de base de datos MySQL
 
 ```bash
 mysql -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY 'root';"
-
-sudo service mysql restart
 ```
 
 ## Comandos básicos de Vagrant
