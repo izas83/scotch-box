@@ -10,14 +10,6 @@ Esta es una versión personalizada de la máquina original que se puede encontra
 * Ejecutar el comando ``` vagrant up ``` en esa carpeta.
 * Acceder al proyecto a través de la dirección [http://192.168.33.10/][14]
 
-## Acceso a MySQL
-
-Para poder acceder desde el equipo anfitrión al servidor de base de datos MySQL con el usuario `root`, necesitamos ejecutar en la línea de comandos:
-
-```bash
-mysql -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY 'root';"
-```
-
 ## Comandos básicos de Vagrant
 
 ### Arrancar el servidor

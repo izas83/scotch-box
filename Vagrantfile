@@ -29,6 +29,7 @@ Vagrant.configure("2") do |config|
       cat /var/www/config/php.ini >> /etc/php5/apache2/php.ini
       service apache2 restart
       sed -i 's/bind-address/#bind-address/g' /etc/mysql/my.cnf
+      mysql -u root -proot -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY 'root';"      
       service mysql restart
     SHELL
 
