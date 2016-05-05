@@ -18,7 +18,7 @@ Vagrant.configure("2") do |config|
 
     config.vm.provision "shell", inline: <<-SHELL
       
-      if ping -c 1 proxyaulas.diocesanas.org &> /dev/null
+      if ping -c 1 nunki.diocesanas.org &> /dev/null
       then
         echo 'Acquire::http::Proxy "http://proxyaulas.diocesanas.org:8080/";' > /etc/apt/apt.conf.d/01proxy
         echo 'Acquire::https::Proxy "http://proxyaulas.diocesanas.org:8080/";' >> /etc/apt/apt.conf.d/01proxy
