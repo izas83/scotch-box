@@ -17,11 +17,19 @@ Vagrant.configure("2") do |config|
     end
 
     config.vm.provision "shell", inline: <<-SHELL
+      
+      if ping -c 1 proxyaulas.diocesanas.org &> /dev/null
+      then
+        echo 'Acquire::http::Proxy "http://proxyaulas.diocesanas.org:8080/";' > /etc/apt/apt.conf.d/01proxy
+        echo 'Acquire::https::Proxy "http://proxyaulas.diocesanas.org:8080/";' >> /etc/apt/apt.conf.d/01proxy
+      fi
+
       apt-get update
       apt-get install -y php5-xdebug
       cat /var/www/config/php.ini >> /etc/php5/apache2/php.ini
       service apache2 restart
       sed -i 's/bind-address/#bind-address/g' /etc/mysql/my.cnf
+      mysql -u root -proot -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY 'root';"      
       service mysql restart
     SHELL
 
