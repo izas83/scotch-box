@@ -53,6 +53,14 @@ class Controlador
         BD\TrabajadorBD::deleteTrabajador($dni);
     }
 
+    public static function getViajeById($id){
+
+
+        return BD\ViajeBD::getViajeById($id);
+    }
+
+
+
 
 
 }

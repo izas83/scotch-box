@@ -41,7 +41,7 @@ abstract class PartelogisticaBD extends GenericoBD{
 
         mysqli_query($con, $query) or die("Error addParteLogistica");
 
-        $id=mysqli_insert_id($con);
+        $id= mysqli_insert_id($con);
 
         parent::desconectar($con);
         return $id;

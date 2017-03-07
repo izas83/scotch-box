@@ -28,6 +28,7 @@ class ParteLogistica{
     private $otroGasto;//Añadido tras modificar la BD
     private $estado;
     private $trabajador;// Objeto logistica?? o Trabajador??
+    private $horasExtra;
     private $viajes;
     /**
      * ParteLogistica constructor.
@@ -185,6 +186,23 @@ class ParteLogistica{
         $this->otroGasto = $otroGasto;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getHorasExtra()
+    {
+        return $this->horasExtra;
+    }
+
+    /**
+     * @param mixed $horasExtra
+     */
+    public function setHorasExtra($horasExtra)
+    {
+        $this->horasExtra = $horasExtra;
+    }
+
+
 
     /**
      * @return mixed
@@ -197,6 +215,7 @@ class ParteLogistica{
         return $this->viajes;
     }
 
+
     /**
      * @param mixed $viajes
      */
@@ -207,5 +226,17 @@ class ParteLogistica{
 
     public function add(){
         BD\PartelogisticaBD::add($this);
+    }
+
+    public function save(){
+        return BD\PartesLogisticaBD::save($this);
+    }
+
+    public function remove(){
+        return BD\PartesLogisticaBD::remove($this);
+    }
+
+    public function cerrarParte(){
+        return BD\PartesLogisticaBD::cerrarParte($this);
     }
 }

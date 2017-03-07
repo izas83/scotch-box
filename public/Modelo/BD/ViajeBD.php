@@ -58,7 +58,7 @@ abstract class ViajeBD extends GenericoBD
                 }
             }
             parent::desconectar($conn);
-            return "Viaje insertado en base de datos";
+            return "Viaje guardado";
         } catch (MySQLDuplicateKeyException $e) {
             parent::desconectar($conn);
             return $e->getMessage();
@@ -129,19 +129,38 @@ abstract class ViajeBD extends GenericoBD
 
         return $viajes;
     }
+
+
+    public static function getViajesByParte($parte){
+
+        $conexion= parent::conectar();
+        $query = "SELECT * FROM ".self::$tabla." WHERE idParte = '".$parte->getId()."'";
+        $rs= mysqli_query($conexion,$query) or die(mysqli_error($conexion));
+
+        $viajes= parent::mapearArray($rs,"Viaje");
+
+        if($rs){
+            parent::desconectar($conexion);
+            return $viajes;
+        }
+        parent::desconectar($conexion);
+        return null;
+
+
+    }
     public static function getViajeByParte($parte)
     {
         $conn = parent::conectar();
 
-        $query = "select * from " . self::getTabla(). " where idParte=" . $parte->getId();
+        $query = "select * from " . self::$tabla. " where idParte=".$parte->getId();
 
         $rs = mysqli_query($conn, $query) or die(mysqli_error($conn));
 
-        $viajes = parent::mapearArray($rs, "Viaje");
+        $viaje = parent::mapearArray($rs, "Viaje");
 
         parent:: desconectar($conn);
 
-        return $viajes;
+        return $viaje;
     }
 
     public static function getViajeById($id)
@@ -152,11 +171,11 @@ abstract class ViajeBD extends GenericoBD
 
         $rs = mysqli_query($conn, $query) or die(mysqli_error($conn));
 
-        $viajes = parent::mapear($rs, "Viaje");
+        $viaje = parent::mapear($rs, "Viaje");
 
         parent:: desconectar($conn);
 
-        return $viajes;
+        return $viaje;
     }
     public static function deleteViajeById($id)
     {
@@ -170,6 +189,21 @@ abstract class ViajeBD extends GenericoBD
 
         parent:: desconectar($conn);
 
+
+    }
+
+
+    public static function modificar($viaje){
+        $conexion= parent::conectar();
+        $query= "UPDATE viajes SET horaInicio='".$viaje->getHoraInicio()."', horaFin='".$viaje->getHoraFin()."', idVehiculo='".$viaje->getVehiculo()->getId()."', albaran='".$viaje->getAlbaran()."' WHERE id= '".$viaje->getId()."';";
+        $respuesta= mysqli_query($conexion,$query) or die(mysqli_error($conexion));
+
+        if($respuesta){
+            parent::desconectar($conexion);
+            return "Viaje modificado correctamente";
+
+        }
+        parent::desconectar($conexion);
 
     }
 }

@@ -22,6 +22,7 @@ if(isset($_POST["cod"])) {
             if ($_POST["fecha"] <= $hoy) {
 
                 ?>
+                <form action="" name="f1">
                 <input type="hidden" name="fecha" id="fecha" value="<?php echo $_POST["fecha"]; ?>">
                 <input type="hidden" name="enviar">
 
@@ -29,7 +30,7 @@ if(isset($_POST["cod"])) {
                 <div class="form-group">
                     <label for="tarea" class="col-sm-3 control-label">Tarea: </label>
                     <div class="col-sm-9">
-                        <select id="tarea" class="form-control" name="tarea">
+                        <select id="tarea" class="form-control" name="tarea" onblur="validarSelect();">
                             <option value="">Elija</option>
                             <?php
 
@@ -91,48 +92,78 @@ if(isset($_POST["cod"])) {
 
                 </div>
                 </div>
+                </form>
 
                 <?php
 
             } else {
                 echo false;
-            }
+            }?>
 
-            break;
+
+            <?php break;
+
+
+
+
         case 2:
-            echo $trabajador->getNombre();
-            echo $trabajador->getHorariosTrabajador()->getId();
-            $id= $trabajador->getHorariosTrabajador()->getId();
-            $horario= Produccion\Controlador::getHorario($id);
-            echo $horario->getId();
-            echo $horario->getTipo();
-
-
-            ?>
+//            echo "Nombre" .$trabajador->getNombre();echo "<br>";
+            $idParte=$_POST['idParte'];
+//            echo "IdParte:".$idParte;echo "<br>";
+            $parte=Produccion\Controlador::getParteById($idParte);
+            $fecha= $parte->getFecha();
+            $semana = date("W",strtotime($fecha));
+//            echo "Semana:". $semana;echo "<br>";
+//           echo "IdHorarioSemana: ".$trabajador->getHorariosTrabajadorBySemana($semana)->getId();echo "<br>";
+           $horario=$trabajador->getHorariosTrabajadorBySemana($semana);
+//           echo "GetSemana: ".$horario->getNumeroSemana();echo "<br>";
+//           echo "Horario: ".$horario->getHorario()->getId();echo "<br>";
+           ?>
 
 
             <form class="form-horizontal">
                 <input type="hidden" name="enviar">
-                <input type="hidden" name="idParte" value="<?php echo $_POST["idParte"]; ?>">
+                <input type="hidden" name="idParte" value="<?php echo $idParte; ?>">
                 <input type="hidden" name="jornadaElegida" id="jornadaElegida" value="">
                 <div class="form-group">
-
+                    <?php
+                    if($horario->getHorario()->getId()=="4" || $horario->getHorario()->getId()=="6" || $horario->getHorario()->getId()=="8"){?>
 
                        <div class="radio col-xs-6 text-right">
 
-                            <input type="radio" name="tipoJornada" id="tipo1" checked>Jornada Continua
+                           <input type="radio" name="tipoJornada" id="tipo1"  value="1" checked="checked">Jornada Continua
 
-                        </div>
-
-
-
+                       </div>
                         <div class="radio col-xs-6 text-left">
-                            <input type="radio" name="tipoJornada" id="tipo2" checked>Jornada Partida
+                            <input type="radio" name="tipoJornada" id="tipo2" value="2" >Jornada Partida
                         </div>
+
+
+
+                          <?php }
+
+                          else{?>
+
+                              <div class="radio col-xs-6 text-right">
+
+                                  <input type="radio" name="tipoJornada" id="tipo1"  value="1" >Jornada Continua
+
+                              </div>
+
+                              <div class="radio col-xs-6 text-left">
+                                  <input type="radio" name="tipoJornada" id="tipo2" value="2" checked="checked">Jornada Partida
+                              </div>
+
+                         <?php }
+
+
+                           ?>
+
+               </div>
 
 
                 <br/>
-                <div class="form-group col-xs-12" style="display: none" id="jornada1">
+                <div class="form-group col-xs-12" style="display:none" id="jornada1">
                     <div class="">
                         <label for="horaInicio1" class="col-sm-3 control-label">Hora de inicio: </label>
                         <div class="col-sm-1 container">
@@ -384,7 +415,7 @@ if(isset($_POST["cod"])) {
 
 
                 </div>
-                <div class="form-group col-xs-12" style="display: none" id="jornada2">
+                <div class="form-group col-xs-12"  style="display: none" id="jornada2">
                     <div class="">
                         <label for="horaInicio2" class="col-sm-3 control-label">Hora de inicio: </label>
                         <div class="col-sm-1 container">
@@ -666,25 +697,51 @@ if(isset($_POST["cod"])) {
                         <textarea class="form-control" name="incidencias" id="incidencias" rows="5"></textarea>
                     </div>
                 </div>
-                <div class="form-group col-xs-12">
-                    <button type="button" id="btnCP" name="btnCerrarParte" class="btn btn-primary cerrarParte">Añadir
-                    </button>
-                    <button type='button' class='btn btn-warning pSalir'>Salir</button>
+
+
+                <div class='form-group' align='center'>
+                    <button type='button' id='btnCP' name='btnCerrarParte' class='btn btn-primary cerrarParte'>Guardar</button>
+                    <button type='button' id='salir' name='btnSalir' class='btn btn-warning pSalir'>Salir</button>
+
                 </div>
-                </div>
+
+
+
                 <script>
-                    $(document).ready(function () {
-                        $("input[name='tipoJornada']").click(function () {
+                    $(document).ready(function(){
+                        var radios = document.getElementsByName('tipoJornada');
+                        var jornada;
+
+                        for (var i = 0, length = radios.length; i < length; i++) {
+                            if (radios[i].checked) {
+
+                                jornada=(radios[i].value);
+
+                                break;
+                            }
+                        }
+                        if(jornada==1){
+                            $("#jornada1").css("display","block");
+                            $("#jornada2").css("display","none");
+                            $('#jornadaElegida').val(1);
+                        }
+                        else if(jornada==2){
+                        $("#jornada1").css("display","inline");
+                        $("#jornada2").css("display","inline");
+
+                        $('#jornadaElegida').val(2);
+
+                        }
+
+                        $("input[name='tipoJornada']").click(function(){
                             var valor = $(this).val();
-                            if (valor == "1") {
-                                $("#jornada1").css("display", "block");
-                                $("#jornada2").css("display", "none");
-                                $("#btnCP").css("display", "block");
+                            if(valor=="1"){
+                                $("#jornada1").css("display","block");
+                                $("#jornada2").css("display","none");
                                 $('#jornadaElegida').val(1);
-                            } else if (valor == "2") {
-                                $("#jornada1").css("display", "inline");
-                                $("#jornada2").css("display", "inline");
-                                $("#btnCP").css("display", "block");
+                            }else if(valor=="2"){
+                                $("#jornada1").css("display","inline");
+                                $("#jornada2").css("display","inline");
                                 $('#jornadaElegida').val(2);
                             }
                         });
@@ -695,7 +752,89 @@ if(isset($_POST["cod"])) {
 
             <?php
             break;
+
         case 3:
+            //recogemos en una variable el idTarea que nos pasan por POST para poder buscarlo en la BD recuperarlo y modificarlo
+
+            $id= $_POST['id'];//este es el id del parteProduccionTarea
+            $parte= Produccion\Controlador::getAllById($id);//deberíamos recuperar todas del controladorcogemos de la BD el parte elegido y recuperamos todos sus datos para luego mostrarlos
+            $tipoTareas = Produccion\Controlador::getTareasSelect();//recuperamos todas las tareas que tenemos en nuestra BD para cambiarla por la que queremos modificar
+            $total= $parte->getPaqueteSalida() - $parte->getPaqueteEntrada();?>
+            <label for=''></label>
+
+<div class='form-group'>
+   <input type='hidden' id='idParte' value='<?php echo $parte->getId();?>'>
+   <input  type='hidden' id='fecha' value="<?php echo $_POST['fecha']?>">
+   
+                    <label for='tarea' class='col-sm-3 control-label'>Tarea: </label>
+                    <div class='col-sm-9'>
+                        <select id='tarea' class='form-control' name='tarea'>
+                            <option value=''><?php echo $parte->getTarea()->getDescripcion();?></option>
+
+            <?php
+            foreach($tipoTareas as $tipo){?>
+
+                <optgroup label='<?php echo $tipo->getDescripcion();?>'>
+
+                <?php
+                foreach($tipo->getTareas() as $tarea){?>
+
+                    <option value="<?php echo $tarea->getId()?>"><?php echo $tarea->getDescripcion()?></option>
+
+                    <?php } ?>
+
+                </optgroup>
+
+           <?php  } ?>
+
+                        </select>
+                    </div>
+                    
+</div>
+
+  <div class='form-group'>
+
+                            <label for='numeroHoras' class='col-sm-3 control-label'> Horas: </label>
+                            <div class='col-sm-9'>
+                                <input type='text' id='numeroHoras' class='form-control' name='numeroHoras' value="<?php echo $parte->getNumeroHoras();?>">
+                            </div>
+                        </div>
+                        <div class='form-group'>
+                            <label for='paquetesEntrada' class='col-sm-3 control-label'>Nº Entrada: </label>
+                            <div class='col-sm-9'>
+                                <input type='text' id='paquetesEntrada' class='form-control' name='paquetesEntrada' value="<?php echo $parte->getPaqueteEntrada();?>">
+                            </div>
+                        </div><div class='form-group'>
+                            <label for='paquetesSalida' class='col-sm-3 control-label'>Nº Salida: </label>
+                            <div class='col-sm-9'>
+                                <input type='text' id='paquetesSalida' class='form-control' name='paquetesSalida' value="<?php echo $parte->getPaqueteSalida();?>">
+                            </div>
+                        </div><div class='form-group'>
+                        
+                        
+                        <label for='paquetesTotal' class='col-sm-3 control-label'>Nº Total: </label>
+                        <div class='col-sm-9'>
+                            <input type='text' id='paquetesTotal' class='form-control' readonly='readonly' value="<?php echo $total ?>">
+                        </div>
+                        
+                        <div class='form-group'>
+                   <div class='col-sm-12 col-xs-offset-2'><br>
+                   
+                   
+                        
+                        <span class='col-xs-6 col-xs-offset2'> <button type='button' class='btn btn-primary pModificar' rel="<?php echo $parte->getId();?>">Modificar</button></span>
+                        <span class='col-xs-4 col-xs-offset2'><button type='button' class='btn btn-warning pSalir' rel="<?php echo $parte->getId();?>">Salir</button></span>
+                        <!--este era la x para cerrar la ventana que estaba en CalendarioViews
+                        \"<a class='close'><span class='glyphicon glyphicon-remove' aria-hidden='true'></span></a>\" +-->
+
+                    </div>
+                </div>
+     <?php
+            break;
+
+
+
+        case 4:
             ?>
 
             <label class="col-sm-6 control-label">Franja horaria</label>
@@ -711,7 +850,7 @@ if(isset($_POST["cod"])) {
             </div>
 
             <?php
-            break;
+
 
     }
 }

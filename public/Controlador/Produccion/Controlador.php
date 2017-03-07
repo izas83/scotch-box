@@ -46,6 +46,11 @@ class Controlador
         return BD\HorarioBD::getHorarioByHorarioTrabajador($datos);
     }
 
+    public static function getParteById($datos){
+        return BD\ParteProduccionBD::getParteById($datos);
+    }
+
+
 }
 
 ?>

@@ -31,9 +31,9 @@ abstract class HorarioTrabajadorBD extends GenericoBD{
         $conexion=parent::conectar();
         $query="SELECT * FROM ".self::$tabla." WHERE dniTrabajador='".$trabajador->getDni()."' and numeroSemana=".$semana;
         $rs=mysqli_query($conexion,$query) or die(mysqli_error($conexion));
-        $respuesta=parent::mapear($rs,"HorariosTrabajadores");
+        $horarioTrabajador=parent::mapear($rs,"HorariosTrabajadores");
         parent::desconectar($conexion);
-        return $respuesta;
+        return $horarioTrabajador;
 
     }
 
@@ -97,4 +97,6 @@ abstract class HorarioTrabajadorBD extends GenericoBD{
         parent::desconectar($con);
 
     }
+
+
 }

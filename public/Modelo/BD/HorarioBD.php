@@ -14,10 +14,10 @@ abstract class HorarioBD extends GenericoBD{
 
     private static $tabla = "horarios";
 
-    public static function getHorarioByHorarioTrabajador($id){
+    public static function getHorarioByHorarioTrabajador($horarioTrabajador){
 
         $conexion=parent::conectar();
-        $query="SELECT * FROM ".self::$tabla." WHERE id= (SELECT idHorario FROM horariotrabajadores WHERE id= $id)";
+        $query="SELECT * FROM ".self::$tabla." WHERE id= (SELECT idHorario FROM horariotrabajadores WHERE id= '".$horarioTrabajador->getId()."')";
         $rs=mysqli_query($conexion,$query) or die(mysqli_error($conexion));
         $respuesta=parent::mapear($rs,"Horario");
         parent::desconectar($conexion);
@@ -97,6 +97,16 @@ abstract class HorarioBD extends GenericoBD{
         parent::desconectar($con);
 
         return $horario;
+    }
+
+    public static function getJornadaSemanal($id){
+        $conexion= parent::conectar();
+        $query= "SELECT * FROM horarios WHERE id= (SELECT idHorario FROM horariotrabajadores WHERE id= $id)";
+        $rs= mysqli_query($conexion,$query) or die(mysqli_error($conexion));
+
+        $jornada= parent::mapear($rs,"HorariosTrabajadores");
+        parent::desconectar($conexion);
+        return $jornada;
     }
 
 }

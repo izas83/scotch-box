@@ -54,8 +54,10 @@ switch ($_POST["accion"])
 
 					echo "<div class='panel-heading container-fluid'><article class='col-xs-6 text-left'><h4 class='panel-title'><strong>".$tipo->getDescripcion().":</strong> <span class='lead small'>".$tarea->getDescripcion()."</span></h4></article>";
 
-					if(strnatcasecmp($estado->getTipo(),"abierto")==0){ echo "<article class='col-xs-6'><a class='tOp eliminar_tarea' rel='".$fila["id"]."'><span class='glyphicon glyphicon-trash' aria-hidden='true'></span></a>
-					                                                                                    <a class='tOp editar_tarea' rel='".$fila["id"]."'><span class='glyphicon glyphicon-edit' aria-hidden='true' style='color:blue'></span></a></article>";}
+					if(strnatcasecmp($estado->getTipo(),"abierto")==0){
+					    echo "<article class='col-xs-6'><a class='tOp eliminar_tarea' rel='".$fila["id"]."'><span class='glyphicon glyphicon-trash' aria-hidden='true'></span></a>
+					                                                                                    <a class='tOp editar_tarea' rel='".$fila["id"]."'><span class='glyphicon glyphicon-edit' aria-hidden='true' style='color:blue'></span></a>
+					                                                                                    </article>";}
 
 					echo '</div><div class="panel-body">';
 
@@ -72,8 +74,13 @@ switch ($_POST["accion"])
 				while($fila=$query->fetch_array());
 
 				if(strnatcasecmp($estado->getTipo(),"abierto")==0){
-					echo "<span class='col-xs-4'><button type='button' class='btn btn-primary pCerrar' rel='".$parte->getId()."'>Cerrar Parte</button> </span>";
-					echo "<span class='col-xs-4'><button type='button' class='btn btn-danger pBorrar' rel='".$parte->getId()."'>Eliminar Parte</button></span>";
+//
+                    echo"<div class='form-group' align='center'>
+			            <button type='button' class='btn btn-primary pCerrar' rel='".$parte->getId()."'>Cerrar Parte</button>
+                        <button type='button' class='btn btn-danger pBorrar' rel='".$parte->getId()."'>Eliminar Parte</button>
+			            <button type='button' class='btn btn-warning pSalir' rel='".$parte->getId()."'>Salir</button>
+
+                    </div>";
 
 				}elseif(strnatcasecmp($estado->getTipo(),"cerrado")==0){
 					echo "<div class='panel panel-default'><div class='panel-body' >";
@@ -123,7 +130,10 @@ switch ($_POST["accion"])
 					}
 
 					echo "</div>";
-				}
+                    echo "<button type='button' class='btn btn-warning pSalir' rel='".$parte->getId()."'>Salir</button>";
+
+                    }
+
 
 			}
 		}else{
@@ -134,9 +144,9 @@ switch ($_POST["accion"])
 
             }
 		}
-		//añadimos el botón de salir aquí abajo porque queremos que aparezca en todos los formularios
 
-        echo "<button type='button' class='btn btn-warning pSalir' rel='".$parte->getId()."'>Salir</button>";
+
+
         break;
 	}
 	case "addTarea":
@@ -233,88 +243,6 @@ switch ($_POST["accion"])
 		else echo "<div class='alert alert-danger col-xs-8 col-xs-offset-2' role='alert'>Tarea No Eliminada</div>";
 		break;
 	}
-
-
-    case "modificar_tarea":
-    {//recogemos en una variable el idTarea que nos pasan por POST para poder buscarlo en la BD recuperarlo y modificarlo
-
-        $id= $_POST['id'];//este es el id del parteProduccionTarea
-        $parte= BD\ParteProduccionTareaBD::getAllById($id);//cogemos de la BD el parte elegido y recuperamos todos sus datos para luego mostrarlos
-        $tipoTareas = BD\TipoTareaBD::getAll();//recuperamos todas las tareas que tenemos en nuestra BD para cambiarla por la que queremos modificar
-        $total= $parte->getPaqueteSalida() - $parte->getPaqueteEntrada();
-        echo"<label for=''></label>
-
-<div class='form-group'>
-   <input type='hidden' id='idParte' value='".$parte->getId()."'>
-                    <label for='tarea' class='col-sm-3 control-label'>Tarea: </label>
-                    <div class='col-sm-9'>
-                        <select id='tarea' class='form-control' name='tarea'>
-                            <option value=''>".$parte->getTarea()->getDescripcion()."</option>";
-
-
-        foreach($tipoTareas as $tipo){
-            echo"<optgroup label='".$tipo->getDescripcion()."'>";
-
-
-            foreach($tipo->getTareas() as $tarea){
-
-                echo "<option value='".$tarea->getId()."'>".$tarea->getDescripcion()."</option>";
-            }
-
-            echo"</optgroup>";
-        }
-        echo"
-                        </select>
-                    </div>
-                    
-</div>
-
-  <div class='form-group'>
-
-                            <label for='numeroHoras' class='col-sm-3 control-label'> Horas: </label>
-                            <div class='col-sm-9'>
-                                <input type='text' id='numeroHoras' class='form-control' name='numeroHoras' value='".$parte->getNumeroHoras()."'>
-                            </div>
-                        </div>
-                        <div class='form-group'>
-                            <label for='paquetesEntrada' class='col-sm-3 control-label'>Nº Entrada: </label>
-                            <div class='col-sm-9'>
-                                <input type='text' id='paquetesEntrada' class='form-control' name='paquetesEntrada' value='".$parte->getPaqueteEntrada()."'> 
-                            </div>
-                        </div><div class='form-group'>
-                            <label for='paquetesSalida' class='col-sm-3 control-label'>Nº Salida: </label>
-                            <div class='col-sm-9'>
-                                <input type='text' id='paquetesSalida' class='form-control' name='paquetesSalida' value='".$parte->getPaqueteSalida()."'>
-                            </div>
-                        </div><div class='form-group'>
-                        
-                        
-                        <label for='paquetesTotal' class='col-sm-3 control-label'>Nº Total: </label>
-                        <div class='col-sm-9'>
-                            <input type='text' id='paquetesTotal' class='form-control' readonly='readonly' value='".$total."'>
-                        </div>
-                        
-                        <div class='form-group'>
-                   <div class='col-sm-12 col-xs-offset-2'><br>
-                   
-                   
-                        
-                        <span class='col-xs-6 col-xs-offset2'> <button type='button' class='btn btn-primary pModificar' rel='".$parte->getId()."'>Modificar</button></span>
-                        <span class='col-xs-4 col-xs-offset2'><button type='button' class='btn btn-warning pSalir' rel='".$parte->getId()."'>Salir</button></span>
-                        <!--este era la x para cerrar la ventana que estaba en CalendarioViews
-                        \"<a class='close'><span class='glyphicon glyphicon-remove' aria-hidden='true'></span></a>\" +-->
-
-                    </div>
-                </div>
-      " ;
-
-
-
-        //echo $parte->getId();
-
-
-    }
-        break;
 
 
     case "guardar_parte_modificado":
@@ -507,8 +435,11 @@ switch ($_POST["accion"])
 		$parte->cerrarParte();
 
 		echo "<div class='alert alert-success' id='fres' role='alert'>Parte Cerrado</div>";
+        echo "<div class='col-xs-8 col-xs-offset-2'><button type='button' class='btn btn-warning pSalir' rel='".$parte->getId()."'>Salir</button></div>";
 
-		break;
+
+
+        break;
 	}
 }
 ?>

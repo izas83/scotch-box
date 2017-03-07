@@ -144,4 +144,7 @@ class Viaje
     }
 
 
+    public function modificar(){
+        return BD\ViajeBD::modificar($this);
+    }
 }

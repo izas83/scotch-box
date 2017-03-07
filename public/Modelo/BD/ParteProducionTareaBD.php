@@ -12,11 +12,11 @@ abstract class ParteProduccionTareaBD extends GenericoBD
 
     private static $tabla = "partesproducciontareas";
 
-    public static function getAllByParte($id){
+    public static function getAllByParte($parte){
 
         $conexion = GenericoBD::conectar();
 
-        $select = "SELECT * FROM ".self::$tabla." WHERE idParteProduccion = ".$id;
+        $select = "SELECT * FROM ".self::$tabla." WHERE idParteProduccion = ".$parte->getId();
 
         $resultado = mysqli_query($conexion,$select);
 

@@ -1,8 +1,6 @@
 <?php
-
-
 namespace Vista\Logistica;
-
+use Vista\Plantilla;
 /**
  * Created by PhpStorm.
  * User: Nestor
@@ -14,7 +12,7 @@ require_once __DIR__.'/../../Modelo/BD/GenericoBD.php';;
 require_once __DIR__.'/../Plantilla/Views.php';
 
 
-use Vista\Plantilla;
+
 abstract class CalendarioViews extends Plantilla\Views
 {
 
@@ -22,7 +20,7 @@ public static function generarcalendario(){
 
 
     parent::setOn(true);
-    require_once __DIR__."/../Plantilla/cabecera.php";
+    require_once __DIR__."/../Plantilla/Cabecera.php";
     ?>
 
 
@@ -81,7 +79,7 @@ public static function generarcalendario(){
                     type: "POST",
                     url: "<?php echo parent::getUrlRaiz()?>/Vista/Logistica/GeneradorFormsViews.php",
                     cache: false,
-                    data: { fecha:formatDate(fecha),cod:1 }
+                    data: {fecha:formatDate(fecha),cod:1 }
                 }).done(function( respuesta ){
                     if(respuesta==false){
                         $("#respuesta_form").html("<div class='alert alert-danger' role='alert'><strong>Error:</strong> La fecha del Parte es Incorrecta.</div>");
@@ -91,11 +89,11 @@ public static function generarcalendario(){
                     }
                 });
 
-                $('#mask').fadeIn(1600)
+                $('#mask').fadeIn(700)
                 .html(
-                    "<a class='cerrar close'><span class='glyphicon glyphicon-remove' aria-hidden='true'></span></a>" +
-                    "<div id='nuevo_evento' class='row' rel='"+fecha+"'>" +
-                        "<h2 class='col-xs-12 text-center'>Parte de "+formatDate(fecha)+"</h2>" +
+
+                    "<div id='nuevo_evento col-xs-12 text-center'rel='"+fecha+"'>" +
+                        "<h2 align='center'>Parte de "+formatDate(fecha)+"</h2>" +
                     "</div>" +
                     "<div class='row window' rel='"+fecha+"'>"+
                         "<div id='respuesta_form' class='col-xs-12 col-md-8 col-md-offset-2'></div>" +
@@ -109,84 +107,149 @@ public static function generarcalendario(){
                     "</div>");
                 });
 
-            /* LISTAR EVENTOS DEL DIA */
+
+
+        /* LISTAR EVENTOS DEL DIA */
             $(document).on("click",'a.mod',function(e)
             {
                 e.preventDefault();
                 var fecha = $(this).attr('rel');
                 $(".cal").fadeOut(500);
 
-                $('#mask').fadeIn(1500).html("<div id='nuevo_evento' class='window' rel='"+fecha+"'><h2>Viajes del "+formatDate(fecha)+"</h2><a href='#' class='cerrar' rel='"+fecha+"'>&nbsp;</a><div id='respuesta'></div><div id='respuesta_form'></div></div>");
+                $('#mask').fadeIn(1500).html("<div id='nuevo_evento' class='window' rel='"+fecha+"'><h2>Viajes del "+formatDate(fecha)+"</h2>" +
+                    "<a href='#' class='cerrar' rel='"+fecha+"'>&nbsp;</a>" +
+                    "<div id='respuesta'></div><div id='respuesta_form'></div></div>");
                 $.ajax({
                     type: "POST",
                     url: "<?php echo parent::getUrlRaiz()?>/Controlador/Logistica/ControladorCalendario.php",
                     cache: false,
-                    data: { fecha:fecha,accion:"listar_evento" }
+                    data: { fecha:fecha,accion:"listar_viaje" }
                 }).done(function( respuesta )
                 {
+
                     $("#respuesta_form").html(respuesta);
                 });
 
             });
 
-            /*Cerrar Parte*/
 
-            $(document).on("click",'.cerrarParte',function(e)
-            {
-                var fecha = $("#nuevo_evento").attr('rel');
+
+
+
+            $(document).on("click",".cerrarParte",function(e){
                 e.preventDefault();
-                $('#mask').html("<div id='nueva_nota' class='window' rel='"+fecha+"'><h2>Parte del "+formatDate(fecha)+"</h2><a href='#' class='cerrar' rel='"+fecha+"'>&nbsp;</a><div id='respuesta'></div><div id='respuesta_form'><form><div class='form-group'><label for='Nota' class='col-sm-3 control-label'>Nota: </label><div class='col-sm-9'><textarea rows='15' id='Nota' class='form-control'></textarea><div class='form-group'><button id='aceptar' class='btn-primary btn pull-left col-sm-3 aceptar'>Añadir</button></div></div></div></form></div></div>");
+                var fecha = $(this).attr('rel');
 
-
-                $(document).on("click",'.aceptar',function(f)
+                $.ajax({
+                    type: "POST",
+                    url: "<?php echo parent::getUrlRaiz()?>/Vista/Logistica/GeneradorFormsViews.php",
+                    cache: false,
+                    data: { fecha:fecha,cod:3}
+                }).done(function( respuesta2 )
                 {
-                    f.preventDefault();
-                    var fecha = $("#nueva_nota").attr('rel');
-                    var nota = $("#Nota").val();
+                    $("#respuesta").html(respuesta2);
+
+                });
+            });
+
+            //GUARDAR EL PARTE CERRADO
+            $(document).on("click","#bCerrarParte",function(e){
+
+                e.preventDefault();
+                var fecha = $(".window").attr("rel");
+
+                var horasInicio1 = $('#horasInicio1').val();
+                var minInicio1 = $('#minInicio1').val();
+                var horasFin1 =$('#horasFin1').val();
+                var minFin1 = $('#minFin1').val();
+
+                var horasInicio2 = $('#horasInicio2').val();
+                var minInicio2 = $('#minInicio2').val();
+                var horasFin2 =$('#horasFin2').val();
+                var minFin2 = $('#minFin2').val();
+
+                var autopista = $('#autopista').val();
+                var dietas = $('#dietas').val();
+                var otrosGastos= $('#otrosGastos').val();
+                var incidencias = $('#incidencias').val();
+
+
+
+                $.ajax({
+                    type: "POST",
+                    url: "<?php echo parent::getUrlRaiz()?>/Controlador/Logistica/ControladorCalendario.php",
+                    cache: false,
+                    data: { fecha:fecha,horasInicio1:horasInicio1,minInicio1:minInicio1,horasFin1:horasFin1,minFin1:minFin1,horasInicio2:horasInicio2,minInicio2:minInicio2,horasFin2:horasFin2,minFin2:minFin2,autopista:autopista,dietas:dietas,otrosGastos:otrosGastos,incidencias:incidencias,jornadaElegida:$('#jornadaElegida').val(),accion:"cerrar_parte"}
+                }).done(function(respuesta)
+                {
+                    $("#respuesta_form").css("display","none");
+                    $("#respuesta").html(respuesta);
+                    setTimeout(function(){
+
+                        $(".close").trigger("click");
+                    },2200);
+
+
+                });
+            });
+
+
+            //SALIR DE LOS PARTES
+            $(document).on("click",'.salir',function (e)
+            {
+                e.preventDefault();
+
+                setTimeout(function(){$("#mask").css("display","none")},20);
+
+                $(".cal").fadeIn(700);
+                var fecha=$(".window").attr("rel");
+                var fechacal=fecha.split("-");
+                generar_calendario(fechacal[1],fechacal[0]);
+
+            });
+
+            //ELIMINAR PARTE
+            $(document).on("click",".eliminarP",function(e){
+
+                e.preventDefault();
+                var idParte = $("#idParte").val();
+
+                var confirmar= confirm("¿Estas seguro de querer borrar este parte?");
+
+                if(confirmar){
+
                     $.ajax({
                         type: "POST",
                         url: "<?php echo parent::getUrlRaiz()?>/Controlador/Logistica/ControladorCalendario.php",
                         cache: false,
-                        data: { fecha:fecha,nota:nota,accion:"cerrarParte" }
-                    }).done(function( respuesta )
+                        data: { idParte:idParte,accion:"borrar_parte" }
+                    }).done(function( respuesta2 )
                     {
-                        $("#respuesta").html(respuesta);
+                        $('.table-responsive').css("display","none");
+                        $("#respuesta").html(respuesta2);
 
                         setTimeout(function(){
-
-                            $("#mask").fadeOut(500);
-                            $('.cal').fadeIn();
-                            location.reload();
-
-                        },3000);
+                            $(".close").trigger("click");
+                        },2200);
 
                     });
-                });
+                    return true;
+
+                }
+                else{
+                    return false;
+                }
+
 
             });
 
 
-            $(document).on("click",'.cerrar',function (e)
-            {
-                e.preventDefault();
-                $('#mask').fadeOut(500);
-                $(".cal").fadeIn(1600);
 
-                setTimeout(function()
-                {
-                    var fecha=$(".window").attr("rel");
-                    var fechacal=fecha.split("-");
-                    generar_calendario(fechacal[1],fechacal[0]);
-                }, 500);
-            });
-
-
-
-            //guardar evento
+            //guardar viaje
             $(document).on("click",'.enviar',function (e)
             {
                 e.preventDefault();
-                var current_p=$(this);
+
                 var vehiculo=$('#Vehiculo').val();
                 var horaInicio=$('#HorasInicio').val()+":"+$('#MinutosInicio').val()+":00";
                 var horaFin=$('#HorasFin').val()+":"+$('#MinutosFin').val()+":00";
@@ -199,43 +262,83 @@ public static function generarcalendario(){
                     url: "<?php echo parent::getUrlRaiz()?>/Controlador/Logistica/ControladorCalendario.php",
                     cache: false,
                     data: { vehiculo:vehiculo,horaInicio:horaInicio,horaFin:horaFin,albaran:albaran,fecha:fecha,accion:'addViaje' }
-                }).done(function( respuesta )
-                    {
-                        $("#mask").html(respuesta);
-                        setTimeout(function(){
+                }).done(function( respuesta ){
 
-                            $("#mask").fadeOut(500);
-                            $('.cal').fadeIn();
-                            location.reload();
+                   $("#respuesta_form").html(respuesta);
 
-                        },3000);
+                    setTimeout(function(){
+                            $("#respuesta_form").html("");
+                        },2200);
+
+                });
+
+           });
+
+            //MODIFICAR VIAJE
+            $(document).on("click",'.editar_viaje',function(e){
+                e.preventDefault();
+                alert("hola");
+
+                var id=$(this).attr("rel");
+                alert(id);
+                //var fecha=$("#fecha").val();
+
+                $.ajax({
+                    type: "POST",
+                    url: "<?php echo parent::getUrlRaiz()?>/Vista/Logistica/GeneradorFormsViews.php",
+                    cache: false,
+                    data: { cod:2,id:id}
+                }).done(function(respuesta2){
+
+                    $("#respuesta_form").html(respuesta2)
 
 
-
-                    })
-                    .error(function(xhr){alert(xhr.status)});
-
+                });
             });
 
-            //eliminar evento
+            //GUARDAR PARTE MODIFICADO
+            $(document).on("click",'.modificar',function(e){
+
+                e.preventDefault(e);
+                var id= $("#idViaje").val();
+                var vehiculo= $("#Vehiculo").val();
+                var horasInicio= $('#HorasInicio').val()+":"+$('#MinutosInicio').val()+":00";
+                var horasFin= $('#HorasFin').val()+":"+$('#MinutosFin').val()+":00";
+                var albaran= $("#Albaran").val();
+
+                $.ajax({
+                    type:"POST",
+                    url:"<?php echo parent::getUrlRaiz()?>/Controlador/Logistica/ControladorCalendario.php",
+                    cache:false,
+                    data:{id:id,vehiculo:vehiculo,horasInicio:horasInicio,horasFin:horasFin,albaran:albaran,accion:"modificar_viaje"}
+                }).done(function(respuesta){
+                    $("#respuesta_form").html(respuesta);
+                });
+            });
+
+
+
+
+            //eliminar viaje
             $(document).on("click",'.eliminar_evento',function (e)
             {
                 e.preventDefault();
-                var current_p=$(this);
-                $("#respuesta").html("<img src='<?php echo parent::getUrlRaiz()?>/Vista/Plantilla/IMG/loading.gif''>");
+
                 var id=$(this).attr("rel");
+                var confirmar = confirm("¿Estás seguro de querer borrar el viaje?");
                 $.ajax({
                     type: "POST",
                     url: "<?php echo parent::getUrlRaiz()?>/Controlador/Logistica/ControladorCalendario.php",
                     cache: false,
-                    data: { id:id,accion:"borrar_evento" }
+                    data: { id:id,accion:"borrar_viaje" }
                 }).done(function( respuesta2 )
                 {
+                    $('#respuesta_form').css("display","none");
                     $("#respuesta").html(respuesta2);
                     setTimeout(function(){
 
                         $("#mask").fadeOut(500);
-                        $('.cal').fadeIn();
+
                         location.reload();
 
                     },2000);

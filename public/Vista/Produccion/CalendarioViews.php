@@ -130,21 +130,6 @@ public static function generarcalendario(){
 
             });
 
-            /*CERRAR DEL VENTANA
-            $(document).on("click",'.close',function (e)
-            {
-                e.preventDefault();
-
-                    setTimeout(function(){$("#mask").css("display","none")},20);
-
-                    $(".cal").fadeIn(700);
-                    var fecha=$(".window").attr("rel");
-                    var fechacal=fecha.split("-");
-                    generar_calendario(fechacal[1],fechacal[0]);
-
-            });*/
-
-
 
             //GUARDAR PARTE
             $(document).on("click",'.enviar',function (e)
@@ -179,6 +164,7 @@ public static function generarcalendario(){
                         $("#respuesta_form").html(respuesta);
 
                         if($("#fres").attr("class").search("alert-success")!=-1){
+
                             document.getElementById("tareasProd").reset();
 
                             setTimeout(function(){
@@ -223,25 +209,26 @@ public static function generarcalendario(){
 
             });
 
-            //EDITAR TAREA
+
+            //EDITAR TAREA CREANDO EL FORMULARIO EN LA VISTA
+
             $(document).on("click",'.editar_tarea',function(e){
                 e.preventDefault();
-                alert("hola");
+
 
                 var id=$(this).attr("rel");
+                var fecha=$("#fecha").val();
 
                 $.ajax({
                     type: "POST",
-                    url: "<?php echo parent::getUrlRaiz()?>/Controlador/Produccion/ControladorCalendario.php",
+                    url: "<?php echo parent::getUrlRaiz()?>/Vista/Produccion/GeneradorFormsViews.php",
                     cache: false,
-                    data: { id:id,accion:"modificar_tarea" }
+                    data: { id:id,fecha:fecha,cod:3 }
                 }).done(function( respuesta )
                 {
-                    $("#respuesta").html(respuesta);
 
-                    setTimeout(function(){
-                        $(".close").trigger("click");
-                    },2200);
+                    $("#respuesta").html(respuesta)
+
 
                 });
             });
@@ -279,10 +266,6 @@ public static function generarcalendario(){
                 }
 
 
-
-
-
-
             });
 
             //SALIR DE LOS PARTES
@@ -304,15 +287,15 @@ public static function generarcalendario(){
             $(document).on("click",".pCerrar",function(e){
                 e.preventDefault();
 
-                var idParte = $(this).attr("rel");
+                //var fecha = $(this).attr("rel");
                 //var fecha= $("#fecha").val();
 
-
+                var idParte = $(this).attr("rel");
                 $.ajax({
                     type: "POST",
                     url: "<?php echo parent::getUrlRaiz()?>/Vista/Produccion/GeneradorFormsViews.php",
                     cache: false,
-                    data: { cod:2,idParte:idParte, fecha:fecha}
+                    data: { cod:2,idParte:idParte}
                 }).done(function( respuesta2 )
                 {
                     $("#respuesta").html(respuesta2);

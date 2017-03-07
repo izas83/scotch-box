@@ -36,7 +36,7 @@ abstract class EstadoBD extends GenericoBD{
     public static function selectEstadoByParteLogistica($partelogistica){
 
         $conexion=parent::conectar();
-        $query="SELECT * FROM estados WHERE id = (SELECT idEstado FROM parteslogistica WHERE id = ".$partelogistica->getId()."); ";
+        $query="SELECT * FROM ".self::$tabla." WHERE id = (SELECT idEstado FROM parteslogistica WHERE id = ".$partelogistica->getId()."); ";
         $rs=mysqli_query($conexion,$query) or die(mysqli_error($conexion));
         $respuesta=parent::mapear($rs,"Estado");
         parent::desconectar($conexion);
